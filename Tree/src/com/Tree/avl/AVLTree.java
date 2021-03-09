@@ -9,17 +9,28 @@ package com.Tree.avl;
  */
 public class AVLTree {
     public static void main(String[] args) {
-        int[] arr = {4,3,6,5,7,8};
+        //int[] arr = {4,3,6,5,7,8};
+        //int[] arr ={10,12,8,9,7,6};
+        int[] arr ={10,11,7,6,8,9};
         AVL tree = new AVL();
         for (int a : arr){
             tree.add(new Node(a));
         }
         System.out.println("中序遍历~");
         tree.infixOrder();
-        System.out.println("未处理前的高度~");
+        System.out.println("处理后的高度~");
         System.out.println("树的高度=" + tree.getRoot().height());
-        System.out.println("左子树的高度=" + tree.getRoot().leftHright());
+        System.out.println("左子树的高度=" + tree.getRoot().leftHeight());
         System.out.println("右子树的高度=" + tree.getRoot().rightHeight());
+        /*
+        Node root = tree.getRoot();
+        root.leftRotate();
+        System.out.println();
+        System.out.println("处理后的高度~");
+        System.out.println("树的高度=" + tree.getRoot().height());
+        System.out.println("左子树的高度=" + tree.getRoot().leftHeight());
+        System.out.println("右子树的高度=" + tree.getRoot().rightHeight());
+        */
     }
 }
 
@@ -50,6 +61,8 @@ class AVL{
             System.out.println("empty tree ,can not travel~");
         }
     }
+
+
 
     //查找需要删除的结点
     public Node search(int val) {
@@ -140,7 +153,7 @@ class Node{
     }
 
     //返回左子树的高度
-    public int leftHright(){
+    public int leftHeight(){
         if (this.left == null){
             return 0;
         }else{
@@ -161,6 +174,40 @@ class Node{
         return Math.max(left == null ? 0 :left.height(), right == null ? 0 : right.height()) + 1;
     }
 
+    //左旋转
+
+    private void leftRotate(){
+        //建一个新结点，新结点的值是根节点的值
+        Node newNode = new Node(val);
+        //将新节点的左子树设置为根节点的左子树
+        newNode.left = left;
+        //新结点的右子树设置为根节点的右子树的左子树
+        newNode.right = right.left;
+        //把当前节点的值替换为右子结点的值
+        val = right.val;
+        //把当前节点的右子树设置为根节点的右子树的右子树
+        right = right.right;
+        //把当前节点的左子树设置为newNode
+        left = newNode;
+    }
+
+    //右旋转
+
+    private void rightRotate(){
+        //建一个新结点，新结点的值是根节点的值
+        Node newNode = new Node(this.val);
+        //将新节点的右子树设置为当前结点的右子树
+        newNode.right = this.right;
+        //新节点的左子树设置为左子树的右子树
+        newNode.left = this.left.right;
+        //当前结点的值设置为左节点的值
+        this.val = this.left.val;
+        //把当前节点的左子树设置为左子树的左子树
+        this.left = left.left;
+        //当前节点的右子树设置为新结点
+        this.right = newNode;
+    }
+
     //添加结点
     public void add(Node node) {
         if (node == null) {
@@ -179,6 +226,13 @@ class Node{
             } else {
                 this.right.add(node);
             }
+        }
+
+        if (rightHeight() - leftHeight() > 1){
+            leftRotate();
+        }
+        if (leftHeight() - rightHeight() > 1){
+            rightRotate();
         }
     }
 
